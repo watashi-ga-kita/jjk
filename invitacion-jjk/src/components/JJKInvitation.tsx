@@ -1,12 +1,33 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import jjk from '../assets/jjk.jpg';
 import gato from '../assets/gato.png';
-import { Film, Calendar, Clock, MapPin } from 'lucide-react';
+import jjkOpening from '../assets/jjk_opening.mp3';
+import { Film, Calendar, Clock, MapPin, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
 
 export default function JJKInvitation() {
     const [hasAccepted, setHasAccepted] = useState(false);
     const [hasRejected, setHasRejected] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isMuted, setIsMuted] = useState(true);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const toggleMute = () => {
+        setIsMuted(prev => !prev);
+    };
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        
+        audio.muted = isMuted;
+        audio.loop = true;
+        // default starting volume 30%
+        try { audio.volume = 0.3; } catch {}
+        
+        if (!isMuted) {
+            audio.play().catch(() => { });
+        }
+    }, [isMuted]);
 
     const handleAccept = () => {
         setIsLoading(true);
@@ -24,11 +45,41 @@ export default function JJKInvitation() {
         }, 600);
     };
 
+    const handleBack = () => {
+        setHasAccepted(false);
+        setHasRejected(false);
+    };
+
     if (hasRejected) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-red-950 via-slate-900 to-black flex items-center justify-center p-4">
+            <div className="min-h-screen bg-gradient-to-br from-red-950 via-slate-900 to-black flex items-center justify-center p-4 relative">
+                {/* Audio element */}
+                <audio ref={audioRef} loop>
+                    <source src={jjkOpening} type="audio/mpeg" />
+                </audio>
+
+                {/* Mute/Unmute button */}
+                <button
+                    onClick={toggleMute}
+                    className="fixed top-4 right-4 z-50 bg-slate-900/80 hover:bg-slate-800/80 backdrop-blur-sm p-3 rounded-full border border-red-500/30 shadow-lg shadow-red-500/20 transition-all duration-300 hover:scale-110"
+                    aria-label={isMuted ? "Unmute" : "Mute"}
+                >
+                    {isMuted ? (
+                        <VolumeX className="w-5 h-5 text-red-400" />
+                    ) : (
+                        <Volume2 className="w-5 h-5 text-red-400" />
+                    )}
+                </button>
+
                 <div className="text-center space-y-6">
-                    <img src={gato} alt="Sad Reaction" />
+                    <img src={gato} alt="Sad Reaction" className="mx-auto max-w-md rounded-2xl shadow-2xl" />
+                    <button
+                        onClick={handleBack}
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-slate-600 hover:from-red-500 hover:to-slate-500 text-white font-bold py-3 px-6 rounded-full shadow-2xl shadow-red-500/30 transform hover:scale-105 transition-all duration-300 border-2 border-red-400/50"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                        <span className="text-base">Volver</span>
+                    </button>
                 </div>
             </div>
         );
@@ -36,7 +87,25 @@ export default function JJKInvitation() {
 
     if (hasAccepted) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-black flex items-center justify-center p-4">
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-black flex flex-col items-center justify-center p-4 relative">
+                {/* Audio element */}
+                <audio ref={audioRef} loop>
+                    <source src={jjkOpening} type="audio/mpeg" />
+                </audio>
+
+                {/* Mute/Unmute button */}
+                <button
+                    onClick={toggleMute}
+                    className="fixed top-4 right-4 z-50 bg-slate-900/80 hover:bg-slate-800/80 backdrop-blur-sm p-3 rounded-full border border-cyan-500/30 shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:scale-110"
+                    aria-label={isMuted ? "Unmute" : "Mute"}
+                >
+                    {isMuted ? (
+                        <VolumeX className="w-5 h-5 text-cyan-400" />
+                    ) : (
+                        <Volume2 className="w-5 h-5 text-cyan-400" />
+                    )}
+                </button>
+
                 <div className="max-w-md w-full bg-gradient-to-br from-blue-900/40 to-slate-900/40 backdrop-blur-xl rounded-3xl p-8 border border-cyan-500/20 shadow-2xl">
                     <div className="text-center space-y-6">
                         <h2 className="text-3xl font-bold text-white">Excelente</h2>
@@ -48,12 +117,38 @@ export default function JJKInvitation() {
                         </p>
                     </div>
                 </div>
+                
+                <button
+                    onClick={handleBack}
+                    className="mt-6 inline-flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-full shadow-2xl shadow-cyan-500/30 transform hover:scale-105 transition-all duration-300 border-2 border-cyan-400/50"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span className="text-base">Volver</span>
+                </button>
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-slate-950 overflow-hidden relative">
+            {/* Audio element */}
+            <audio ref={audioRef} loop>
+                <source src={jjkOpening} type="audio/mpeg" />
+            </audio>
+
+            {/* Mute/Unmute button */}
+            <button
+                onClick={toggleMute}
+                className="fixed top-4 right-4 z-50 bg-slate-900/80 hover:bg-slate-800/80 backdrop-blur-sm p-3 rounded-full border border-cyan-500/30 shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:scale-110"
+                aria-label={isMuted ? "Unmute" : "Mute"}
+            >
+                {isMuted ? (
+                    <VolumeX className="w-5 h-5 text-cyan-400" />
+                ) : (
+                    <Volume2 className="w-5 h-5 text-cyan-400" />
+                )}
+            </button>
+            
             {/* Animated background with JJK colors */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-950/30 via-slate-900 to-black"></div>
 
@@ -90,9 +185,10 @@ export default function JJKInvitation() {
                         </div>
                     </div>
                 )}
+                
                 {/* Header */}
                 <div className="text-center mb-4 space-y-2 lg:mb-6 w-full">
-                    <Film className="w-10 h-10 lg:w-11 lg:h-11 text-cyan-400 mx-auto animate-bounce drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
+                    <Film className="w-10 h-10 lg:w-11 lg:h-11 text-cyan-400 mx-auto drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
                     <h1 className="text-xl lg:text-3xl font-bold text-white tracking-wider drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]">
                         INVITACIÓN GRACIOSA
                     </h1>
